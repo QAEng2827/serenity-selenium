@@ -5,8 +5,10 @@ import net.thucydides.core.steps.ScenarioSteps;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import page.LandingPage;
+import page.LinkedinBasePage;
 
 public class UserSteps extends ScenarioSteps {
+    LinkedinBasePage linkedinBasePage;
     LandingPage landingPage;
 
     @Step
