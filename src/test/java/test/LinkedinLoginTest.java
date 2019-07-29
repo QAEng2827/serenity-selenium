@@ -6,12 +6,14 @@ import org.junit.runner.RunWith;
 
 @RunWith(SerenityRunner.class)
 public class LinkedinLoginTest extends BaseTest{
+
+
     @Test
     public void successfulLoginTest(){
-        driver.navigate().to("https://www.linkedin.com/");
-
-        //  написать сексессфул тест на вход, используя пейдж обжект(прочесть документацию)
-
+        user.openLandingPage();
+       // user.checkWelcomeTitle();
+        user.checkElementsLandingPage();
+        user.setCridentials("qaeng2728@gmail.com", "chertopoloh2827");
 
     }
 }
