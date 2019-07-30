@@ -66,6 +66,7 @@ public class LandingPage extends PageObject {
     }
 
     public <T> T login(String userEmail, String userPassword){
+    //    secondarySingInButton.click();
 
         userEmailField.sendKeys(userEmail);
         userPasswordField.sendKeys(userPassword);

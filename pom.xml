@@ -9,15 +9,17 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <serenity.version>2.0.50</serenity.version>
+        <serenity.version>2.0.60</serenity.version>
         <jackson.databind.version>2.9.9</jackson.databind.version>
         <slf4j.version>1.7.26</slf4j.version>
         <surefire.version>2.20</surefire.version>
-        <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <source.encoding>UTF-8</source.encoding>
         <java.version>11</java.version>
         <test.name>*</test.name>
         <env>qa</env> <!--добиваили параметр, какую среду вібрать-->
+        <selenium.java.version>3.141.59</selenium.java.version>
+        <webdrivermanager.version>3.6.2</webdrivermanager.version>
     </properties>
 
 
@@ -26,20 +28,21 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>3.141.59</version>
+            <version>${selenium.java.version}</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/net.serenity-bdd/serenity-core -->
         <dependency>
             <groupId>net.serenity-bdd</groupId>
             <artifactId>serenity-core</artifactId>
-            <version>2.0.60</version>
+            <version>${serenity.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/net.serenity-bdd/serenity-junit -->
         <dependency>
             <groupId>net.serenity-bdd</groupId>
             <artifactId>serenity-junit</artifactId>
-            <version>2.0.60</version>
+            <version>${serenity.version}</version>
         </dependency>
 
         <!-- чтобы было логирование to enable defoult Serenity logging
@@ -55,12 +58,56 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>3.6.2</version>
+            <version>${webdrivermanager.version}</version>
             <scope>test</scope>
         </dependency>
 
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.serenity-bdd.maven.plugins</groupId>
+                <artifactId>serenity-maven-plugin</artifactId>
+                <version>${serenity.version}</version>
+                <executions>
+                    <execution>
+                        <id>serenity-reports</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!--  пропускает упавшие тесты, и формирует отчет-->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <includes>
+                        <!--   позволяет запустить конкретный тестовый класс из папки tests, не зависимо от того, есть ли в названии
+                        слово test-->
+                        <include>**/tests/**/${test.name}.java</include>
+                    </includes>
+                    <testFailureIgnore>true</testFailureIgnore>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>
