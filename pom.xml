@@ -9,68 +9,85 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <!-- plugins -->
+        <maven.surfire.plugin.version>2.19.1</maven.surfire.plugin.version>
+        <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
+        <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
+
         <serenity.version>2.0.60</serenity.version>
-        <jackson.databind.version>2.9.9</jackson.databind.version>
         <slf4j.version>1.7.26</slf4j.version>
-        <surefire.version>2.20</surefire.version>
-        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <source.encoding>UTF-8</source.encoding>
-        <java.version>11</java.version>
+        <java.version>8</java.version>
         <test.name>*</test.name>
-        <env>qa</env> <!--добиваили параметр, какую среду вібрать-->
-        <selenium.java.version>3.141.59</selenium.java.version>
-        <webdrivermanager.version>3.6.2</webdrivermanager.version>
     </properties>
 
-
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>${selenium.java.version}</version>
+            <version>3.141.59</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/net.serenity-bdd/serenity-core -->
         <dependency>
             <groupId>net.serenity-bdd</groupId>
             <artifactId>serenity-core</artifactId>
             <version>${serenity.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/net.serenity-bdd/serenity-junit -->
         <dependency>
             <groupId>net.serenity-bdd</groupId>
             <artifactId>serenity-junit</artifactId>
             <version>${serenity.version}</version>
         </dependency>
-
-        <!-- чтобы было логирование to enable defoult Serenity logging
-               https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-jbehave</artifactId>
+            <version>1.46.0</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- webdrivermanager
-                       https://github.com/bonigarcia/webdrivermanager -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>${webdrivermanager.version}</version>
+            <version>3.6.2</version>
             <scope>test</scope>
         </dependency>
-
-
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${source.encoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surfire.plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>net.serenity-bdd.maven.plugins</groupId>
                 <artifactId>serenity-maven-plugin</artifactId>
                 <version>${serenity.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.serenity-bdd</groupId>
+                        <artifactId>serenity-core</artifactId>
+                        <version>${serenity.version}</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>serenity-reports</id>
@@ -81,33 +98,106 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <!--  пропускает упавшие тесты, и формирует отчет-->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.version}</version>
-                <configuration>
-                    <includes>
-                        <!--   позволяет запустить конкретный тестовый класс из папки tests, не зависимо от того, есть ли в названии
-                        слово test-->
-                        <include>**/tests/**/${test.name}.java</include>
-                    </includes>
-                    <testFailureIgnore>true</testFailureIgnore>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.failsafe.plugin.version}</version>
+                        <configuration>
+                            <!--To run by SerenitySites in parallel
+                            <parallel>suites</parallel>
+                            <threadCountSuites>2</threadCountSuites>
+                            <forkCount>2</forkCount>-->
+                            <includes>
+                                <!--To run by testName from command line-->
+                                <include>**/test/**/${test.name}.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <webdriver.driver>chrome</webdriver.driver>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>selenoid</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.failsafe.plugin.version}</version>
+                        <configuration>
+                            <includes>
+                                <!--To run by testName from command line-->
+                                <include>**/test/**/${test.name}.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <webdriver.driver>chrome</webdriver.driver>
+                                <webdriver.remote.url>http://localhost:4444/wd/hub</webdriver.remote.url>
+                                <!--                                <webdriver.remote.url>http://34.220.181.94:4444/wd/hub</webdriver.remote.url>-->
+                                <serenity.driver.capabilities>enableVNC:true;enableVideo:true;sessionTimeout:2m;timeZone:America/Los_Angeles;</serenity.driver.capabilities>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>browserstack</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.failsafe.plugin.version}</version>
+                        <configuration>
+                            <!--To run by SerenitySites in parallel
+                            <parallel>suites</parallel>
+                            <threadCountSuites>2</threadCountSuites>
+                            <forkCount>2</forkCount>-->
+                            <includes>
+                                <!--To run by testName from command line-->
+                                <include>**/test/**/${test.name}.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <!--To Do-->
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 
 </project>

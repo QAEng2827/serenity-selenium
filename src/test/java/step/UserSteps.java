@@ -2,47 +2,38 @@ package step;
 
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.steps.ScenarioSteps;
-import org.junit.Assert;
-import org.openqa.selenium.By;
+import page.HomePage;
 import page.LandingPage;
-import page.LinkedinBasePage;
+import page.LoginPage;
 
 public class UserSteps extends ScenarioSteps {
-    LinkedinBasePage linkedinBasePage;
+
     LandingPage landingPage;
+    LoginPage loginPage;
+    HomePage homePage;
 
     @Step
-    public void openLandingPage(){
-    landingPage.open();
+    public void openLandingPage() {
+        landingPage.open();
     }
 
     @Step
-    public void checkWelcomeTitle() {
-        Assert.assertTrue(getDriver()
-                .getTitle()
-                .contains("LinkedIn"));
+    public void clickOnButton(String buttonText) {
+        landingPage.clickOnButtonWithText(buttonText);
     }
 
     @Step
-    public void checkElementsLandingPage() {
-        Assert.assertTrue(getDriver()
-                .getTitle()
-                .contains("LinkedIn"));
-        System.out.println("Yo-ho!");
-        Assert.assertTrue(landingPage.lazyLogoIsDisplayed());
-        System.out.println("Yo-ho! Yo-ho!");
-        Assert.assertTrue(landingPage.secondaryLoginButtonIsEnabled());
-        System.out.println("Yo-ho! Yo-ho! Go to next level!");
-        Assert.assertTrue(landingPage.userEmailFieldIsDisplayed());
-        System.out.println("Yo-ho! Yo-ho! Go to next level!");
+    public void login(String userEmail, String userPassword) {
+        loginPage.login(userEmail, userPassword);
     }
 
     @Step
-    public void setCridentials(String userEmail, String userPassword){
-               System.out.println("Just a moment please");
-               landingPage.login(userEmail,userPassword);
-
-
+    public boolean isHomePageLoaded() {
+        return homePage.isPageLoaded();
     }
 
+    @Step
+    public boolean isLoginPageLoaded() {
+        return loginPage.isPageLoaded();
+    }
 }
