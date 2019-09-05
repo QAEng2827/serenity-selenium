@@ -39,6 +39,6 @@ public class CommonStepDefinition {
 
     @Then("I should be on Checkpoint page")
     public void thenIShouldBeOnCheckpointPage() {
-        Assert.assertTrue("Checkpoint page is not loaded.", userSteps.isLoginPageLoaded());
+        Assert.assertTrue("Checkpoint page is not loaded.", userSteps.isCheckpointPageLoaded());
     }
 }

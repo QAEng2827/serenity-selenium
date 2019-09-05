@@ -2,6 +2,7 @@ package step;
 
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.steps.ScenarioSteps;
+import page.CheckpointPage;
 import page.HomePage;
 import page.LandingPage;
 import page.LoginPage;
@@ -11,6 +12,7 @@ public class UserSteps extends ScenarioSteps {
     LandingPage landingPage;
     LoginPage loginPage;
     HomePage homePage;
+    CheckpointPage checkpointPage;
 
     @Step
     public void openLandingPage() {
@@ -35,5 +37,10 @@ public class UserSteps extends ScenarioSteps {
     @Step
     public boolean isLoginPageLoaded() {
         return loginPage.isPageLoaded();
+    }
+
+    @Step
+    public boolean isCheckpointPageLoaded() {
+        return checkpointPage.isPageLoaded();
     }
 }
